@@ -24,12 +24,11 @@ def chat():
         return jsonify({"reply": "Please enter a message!"})
 
     try:
-        # Using Gemini model
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # ✅ Use correct model for free-tier API key
+        model = genai.GenerativeModel("gemini-pro")
 
         response = model.generate_content(user_message)
 
-        # Extract text from response
         if hasattr(response, "text") and response.text:
             reply = response.text
         else:
