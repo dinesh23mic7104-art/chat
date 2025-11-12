@@ -24,11 +24,10 @@ def chat():
         return jsonify({"reply": "Please enter a message!"})
 
     try:
-        # ✅ FIX: Use a current, active model name.
-        # "gemini-pro" (version 1.0) is deprecated and has been retired.
-        # We are changing it to "gemini-1.5-pro-latest" which is the current model.
-        model = genai.GenerativeModel("gemini-1.5-pro-latest")
-        # You could also use "gemini-1.5-flash-latest" for a faster response.
+        # ✅ FIX 2: "gemini-1.5-pro-latest" is also deprecated for many API keys.
+        # We are now using "gemini-2.5-flash-preview-09-2025", which is a current
+        # and recommended model for this API.
+        model = genai.GenerativeModel("gemini-2.5-flash-preview-09-2025")
 
 
         response = model.generate_content(user_message)
