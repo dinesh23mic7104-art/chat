@@ -1,0 +1,79 @@
+﻿/* Dark Theme Chat UI */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.chat-container {
+  width: 400px;
+  max-width: 95%;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+h2 {
+  text-align: center;
+  color: #58a6ff;
+  margin-bottom: 10px;
+}
+
+.chat-box {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 10px;
+  background: #0d1117;
+}
+
+.message {
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.user {
+  text-align: right;
+  color: #58a6ff;
+}
+
+.bot {
+  text-align: left;
+  color: #c9d1d9;
+}
+
+.input-area {
+  display: flex;
+  margin-top: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px 0 0 5px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  color: white;
+}
+
+.input-area button {
+  background: #238636;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.input-area button:hover {
+  background: #2ea043;
+}
