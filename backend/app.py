@@ -1,47 +1,48 @@
-﻿from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests
+import google.generativeai as genai
 import os
 
 app = Flask(__name__)
 CORS(app)
 
-HF_API_KEY = os.environ.get("HF_API_KEY")
-MODEL_URL = "https://router.huggingface.co/hf-inference/models/microsoft/DialoGPT-medium"
+# Load Gemini API key from environment variable
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-@app.route('/chat', methods=['POST'])
+if not GEMINI_API_KEY:
+    raise ValueError("⚠️ GEMINI_API_KEY is missing! Please set it in environment variables.")
+
+# Configure Gemini client
+genai.configure(api_key=GEMINI_API_KEY)
+
+@app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json(force=True)
-    user_message = data.get('message', '')
-    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
-    payload = {"inputs": user_message}
+    user_message = data.get("message", "").strip()
+
+    if not user_message:
+        return jsonify({"reply": "Please enter a message!"})
 
     try:
-        response = requests.post(MODEL_URL, headers=headers, json=payload, timeout=30)
-        result = response.json()
-        bot_reply = None
+        # Using Gemini model
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
-        if isinstance(result, dict) and "generated_text" in result:
-            bot_reply = result["generated_text"]
-        elif isinstance(result, list) and len(result) > 0 and "generated_text" in result[0]:
-            bot_reply = result[0]["generated_text"]
-        elif isinstance(result, dict) and "outputs" in result:
-            outputs = result["outputs"]
-            if isinstance(outputs, list) and len(outputs) > 0:
-                content = outputs[0].get("content", [])
-                if content and isinstance(content, list) and "text" in content[0]:
-                    bot_reply = content[0]["text"]
+        response = model.generate_content(user_message)
 
-        if not bot_reply:
-            bot_reply = result.get("error", "🤖 Model warming up — please retry.")
+        # Extract text from response
+        if hasattr(response, "text") and response.text:
+            reply = response.text
+        else:
+            reply = "🤖 I couldn’t generate a proper reply. Try again."
+
+        return jsonify({"reply": reply})
+
     except Exception as e:
-        bot_reply = f"⚠️ Error contacting AI: {e}"
+        return jsonify({"reply": f"⚠️ Error contacting Gemini API: {str(e)}"})
 
-    return jsonify({"reply": bot_reply})
-
-@app.route('/')
+@app.route("/")
 def home():
-    return "🤖 Smart Chatbot backend is running!"
+    return "🤖 Google Gemini Chatbot Backend running successfully!"
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
