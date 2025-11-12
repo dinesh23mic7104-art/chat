@@ -24,19 +24,26 @@ def chat():
         return jsonify({"reply": "Please enter a message!"})
 
     try:
-        # ✅ Use correct model for free-tier API key
-        model = genai.GenerativeModel("gemini-pro")
+        # ✅ FIX: Use a current, active model name.
+        # "gemini-pro" (version 1.0) is deprecated and has been retired.
+        # We are changing it to "gemini-1.5-pro-latest" which is the current model.
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+        # You could also use "gemini-1.5-flash-latest" for a faster response.
+
 
         response = model.generate_content(user_message)
 
         if hasattr(response, "text") and response.text:
             reply = response.text
         else:
-            reply = "🤖 I couldn’t generate a proper reply. Try again."
+            # This can happen if the content is blocked by safety settings
+            reply = "🤖 I couldn't generate a proper reply. This might be due to safety settings or other issues. Try again with a different prompt."
 
         return jsonify({"reply": reply})
 
     except Exception as e:
+        # Log the full error to your console for debugging
+        print(f"An error occurred: {e}")
         return jsonify({"reply": f"⚠️ Error contacting Gemini API: {str(e)}"})
 
 @app.route("/")
@@ -44,4 +51,6 @@ def home():
     return "🤖 Google Gemini Chatbot Backend running successfully!"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # It's generally better to use a proper WSGI server like gunicorn for production,
+    # but app.run() is fine for testing.
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
